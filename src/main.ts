@@ -95,6 +95,7 @@ export default class CookPlugin extends Plugin {
           recipe,
           file,
           settings: embedSettings(this.settings),
+          narrative: [],
           host: this.recipeHost,
           timers: null,
           state: {

@@ -50,6 +50,7 @@ function settings() {
         showServingsScaler: true,
         twoColumnLayout: true,
         enableStepTracking: true,
+        showNarrative: true,
         servingsLabel: '',
         metadataLabel: '',
         ingredientLabel: '',
@@ -59,6 +60,7 @@ function settings() {
         secondsLabel: '',
         minutesLabel: '',
         hoursLabel: '',
+        narrativeLabel: '',
     };
 }
 
@@ -175,6 +177,7 @@ function model(overrides: Partial<RecipeRenderModel> = {}): RecipeRenderModel {
         recipe: recipe(),
         file: null,
         settings: settings(),
+        narrative: [],
         state: {
             scale: 1,
             baseServings: 4,
@@ -249,6 +252,50 @@ describe('RecipePreview', () => {
         await fireEvent.click(screen.getByRole('button', { name: 'Pause rest (1:30)' }));
         expect(renderModel.timers?.toggle).toHaveBeenCalledOnce();
         expect(renderModel.callbacks.onStepActivate).toHaveBeenCalledOnce();
+    });
+
+    it('shows the first two narrative paragraphs, revealing the rest behind a disclosure', async () => {
+        const renderModel = model({
+            narrative: ['First paragraph.', 'Second paragraph.', 'Third paragraph.'],
+        });
+        const view = render(RecipePreview, { model: renderModel });
+
+        expect(screen.getByText('First paragraph.')).toBeTruthy();
+        expect(screen.getByText('Second paragraph.')).toBeTruthy();
+
+        const narrative = view.container.querySelector('.cook-narrative');
+        expect(Array.from(narrative?.children ?? []).some(el => el.textContent === 'Third paragraph.')).toBe(false);
+
+        const details = view.container.querySelector<HTMLDetailsElement>('.cook-narrative-details');
+        expect(details?.open).toBe(false);
+        expect(details?.textContent).toContain('Third paragraph.');
+
+        await fireEvent.click(screen.getByText('Continue reading'));
+        expect(details?.open).toBe(true);
+        expect(screen.getByText('Third paragraph.')).toBeTruthy();
+    });
+
+    it('does not show a disclosure when there are two or fewer narrative paragraphs', () => {
+        const view = render(RecipePreview, {
+            model: model({ narrative: ['Only paragraph.'] }),
+        });
+
+        expect(screen.getByText('Only paragraph.')).toBeTruthy();
+        expect(view.container.querySelector('.cook-narrative-details')).toBeNull();
+    });
+
+    it('hides the narrative section when there is none or the setting is off', () => {
+        const withoutNarrative = render(RecipePreview, { model: model({ narrative: [] }) });
+        expect(withoutNarrative.container.querySelector('.cook-narrative')).toBeNull();
+        cleanup();
+
+        const disabled = render(RecipePreview, {
+            model: model({
+                narrative: ['First paragraph.'],
+                settings: { ...settings(), showNarrative: false },
+            }),
+        });
+        expect(disabled.container.querySelector('.cook-narrative')).toBeNull();
     });
 
     it('honors settings that hide optional recipe regions', () => {

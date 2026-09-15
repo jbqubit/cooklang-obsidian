@@ -46,6 +46,8 @@ export interface RecipeRenderModel {
     recipe: CooklangRecipe;
     file: TFile | null;
     settings: CooklangSettings;
+    /** Whimsical narrative/story paragraphs extracted from [- story ... -] blocks. */
+    narrative: string[];
     state: PreviewState;
     callbacks: PreviewCallbacks;
     host: RecipeHostAdapter;

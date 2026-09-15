@@ -15,6 +15,7 @@ import {
     deriveServingsState,
     type RecipeReferenceScaleRequest,
 } from './utils/scaling';
+import { extractNarrativeParagraphs } from './utils/narrative';
 import alarmMp3 from './alarm.mp3';
 import timerMp3 from './timer.mp3';
 import { flushSync, mount, unmount } from 'svelte';
@@ -402,6 +403,7 @@ export class CookView extends TextFileView {
             recipe: rawRecipe,
             file: this.file,
             settings: this.settings,
+            narrative: extractNarrativeParagraphs(this.data),
             host: this.host,
             timers: this.timerService,
             state: {

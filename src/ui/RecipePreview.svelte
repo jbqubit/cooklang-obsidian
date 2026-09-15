@@ -6,6 +6,7 @@
     import IngredientList from './components/IngredientList.svelte';
     import Metadata from './components/Metadata.svelte';
     import MethodSteps from './components/MethodSteps.svelte';
+    import Narrative from './components/Narrative.svelte';
     import ScalerBar from './components/ScalerBar.svelte';
     import TimerList from './components/TimerList.svelte';
     import type { RecipeRenderModel } from './types';
@@ -17,6 +18,7 @@
 
 <Hero {model} {mainImage} />
 <ScalerBar {model} />
+<Narrative {model} />
 
 <div class:cook-cols-stacked={!model.settings.twoColumnLayout} class="cook-cols">
     <aside class="cook-aside" aria-label="Recipe ingredients and equipment">

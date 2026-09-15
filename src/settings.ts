@@ -25,6 +25,7 @@ export class CooklangSettings {
   showServingsScaler: boolean = true;
   twoColumnLayout: boolean = true;
   enableStepTracking: boolean = true;
+  showNarrative: boolean = true;
   servingsLabel: string = "";
   metadataLabel: string = "";
   ingredientLabel: string = "";
@@ -34,6 +35,7 @@ export class CooklangSettings {
   secondsLabel: string = "";
   minutesLabel: string = "";
   hoursLabel: string = "";
+  narrativeLabel: string = "";
 }
 
 export class CookSettingsTab extends PluginSettingTab {
@@ -137,6 +139,17 @@ export class CookSettingsTab extends PluginSettingTab {
         .setValue(this.plugin.settings.twoColumnLayout)
         .onChange((value: boolean) => {
           this.plugin.settings.twoColumnLayout = value;
+          this.plugin.saveData(this.plugin.settings);
+          this.plugin.reloadCookViews();
+        }));
+
+    new Setting(containerEl)
+      .setName('Story')
+      .setDesc('Show whimsical narrative text (from [- story ... -] blocks) above the ingredients and method')
+      .addToggle(toggle => toggle
+        .setValue(this.plugin.settings.showNarrative)
+        .onChange((value: boolean) => {
+          this.plugin.settings.showNarrative = value;
           this.plugin.saveData(this.plugin.settings);
           this.plugin.reloadCookViews();
         }));
@@ -338,6 +351,18 @@ export class CookSettingsTab extends PluginSettingTab {
       .setPlaceholder("h,hr,hrs,hour,hours")
       .onChange(async (value) => {
         this.plugin.settings.hoursLabel = value;
+        this.plugin.saveData(this.plugin.settings);
+        this.plugin.reloadCookViews();
+      }));
+
+    new Setting(containerEl)
+      .setName("Continue Reading Label")
+      .setDesc("Choose your label for revealing the rest of the story")
+      .addText((text) => text
+      .setValue(this.plugin.settings.narrativeLabel)
+      .setPlaceholder("Continue reading")
+      .onChange(async (value) => {
+        this.plugin.settings.narrativeLabel = value;
         this.plugin.saveData(this.plugin.settings);
         this.plugin.reloadCookViews();
       }));
