@@ -8,6 +8,7 @@ import {
   Menu,
   MarkdownPostProcessorContext,
   MarkdownRenderChild,
+  Notice,
 } from 'obsidian';
 import { CookView } from './cookView'
 import { CooklangSettings, CookSettingsTab } from './settings'
@@ -376,8 +377,23 @@ export default class CookPlugin extends Plugin {
     while(this.app.vault.getAbstractFileByPath(newFileFolderPath)) {
       newFileFolderPath = `${originalPath}Untitled ${++i}.cook`;
     }
-    const newFile = await this.app.vault.create(newFileFolderPath, '');
+    const newFile = await this.app.vault.create(newFileFolderPath, await this.getNewRecipeTemplateContent());
     return newFile;
+  }
+
+  // Read the configured new-recipe template, if any, for use as the
+  // starting content of files created via cookFileCreator.
+  private async getNewRecipeTemplateContent(): Promise<string> {
+    const templatePath = this.settings.newRecipeTemplatePath?.trim();
+    if (!templatePath) return '';
+
+    const templateFile = this.app.vault.getAbstractFileByPath(templatePath);
+    if (!(templateFile instanceof TFile)) {
+      new Notice(`Cooklang: recipe template not found at "${templatePath}"`);
+      return '';
+    }
+
+    return this.app.vault.read(templateFile);
   }
 
   // function to create the view

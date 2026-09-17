@@ -61,6 +61,7 @@ function settings() {
         minutesLabel: '',
         hoursLabel: '',
         narrativeLabel: '',
+        newRecipeTemplatePath: '',
     };
 }
 

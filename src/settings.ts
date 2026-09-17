@@ -36,6 +36,7 @@ export class CooklangSettings {
   minutesLabel: string = "";
   hoursLabel: string = "";
   narrativeLabel: string = "";
+  newRecipeTemplatePath: string = "templates/recipes.cook";
 }
 
 export class CookSettingsTab extends PluginSettingTab {
@@ -241,6 +242,21 @@ export class CookSettingsTab extends PluginSettingTab {
           this.plugin.saveData(this.plugin.settings);
           this.plugin.reloadCookViews();
         }));
+
+    new Setting(containerEl)
+      .setName('New Recipe')
+      .setHeading();
+
+    new Setting(containerEl)
+      .setName('Template file')
+      .setDesc('Vault path to a .cook file used as the starting content for new recipes (e.g. from the folder context menu). Leave blank to start with an empty file.')
+      .addText(text => text
+      .setValue(this.plugin.settings.newRecipeTemplatePath)
+      .setPlaceholder('templates/recipes.cook')
+      .onChange(async (value) => {
+        this.plugin.settings.newRecipeTemplatePath = value;
+        this.plugin.saveData(this.plugin.settings);
+      }));
 
     new Setting(containerEl)
       .setName('Custom Labels')
